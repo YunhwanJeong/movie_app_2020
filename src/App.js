@@ -1,42 +1,55 @@
 import React from 'react';
-import axios from 'axios';
+import { Switch, Route } from 'react-router-dom';
+import styled, { createGlobalStyle } from 'styled-components';
+import reset from 'styled-reset';
 
-import Movie from './Movie';
+import Home from './routes/Home';
+import About from './routes/About';
+import Nav from './components/Nav';
+import MovieDetail from './routes/MovieDetail';
 
-class App extends React.Component {
-  state = {
-    isLoading: true,
-    movies: []
-  };
+const GlobalStyle = createGlobalStyle`
+  ${reset}
 
-  getMovies = async () => {
-    const { 
-      data: { 
-        data: { 
-          movies 
-        }
-      }
-    } = await axios.get('http://yts-proxy.now.sh/list_movies.json?sort_by=rating');
-    this.setState({
-      movies,
-      isLoading: false
-    });
-  };
+  * {
+    box-sizing:border-box;
+  }
 
-  componentDidMount() {
-    this.getMovies();
-  } 
+  html {
+    font-size: 62.5%;
+    font-family: 'Open Sans', sans-serif;
+  }
 
-  render() {
-    const { isLoading, movies } = this.state;
-    return (
-      <div>
-        { isLoading 
-          ? "Loading Movies..." 
-          : movies.map(movie => (<Movie key={movie.id} id={movie.id} year={movie.year} title={movie.title} summary={movie.summary} poster={movie.medium_cover_image} />))}
-      </div>
-    )
-  };
+  a {
+    text-decoration:none;
+    color:inherit;
+  }
+`;
+
+const StyledApp = styled.div`
+`;
+const StyledAppWrapper = styled.div`
+  display: flex;
+  padding: 5rem;
+  border-radius: 16px;
+`;
+
+function App() {
+  return (
+    <>
+      <GlobalStyle />
+      <StyledApp>
+        <StyledAppWrapper>
+          <Nav />
+          <Switch>
+            <Route exact path="/" render={(routeProps) => <Home {...routeProps}/>} />
+            <Route path="/about" render={(routeProps) => <About {...routeProps}/>} />
+            <Route path="/movie/:id" render={(routeProps) => <MovieDetail {...routeProps}/>}/>
+          </Switch>
+        </StyledAppWrapper>
+      </StyledApp>
+    </>
+  );
 }
 
 export default App;
